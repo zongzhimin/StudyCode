@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8"> 
+   <title>Bootstrap 实例 - 响应式的列重置</title>
+   <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">  
+   <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+   <script src="vue.min.js"></script>
+   <style>
+		.column{ text-align:center;border:1px solid #09a800;}
+		html,body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+		body {
+            display: flex;
+            align-items: center; /*定义body的元素垂直居中*/
+            justify-content: center; /*定义body的里的元素水平居中*/
+        }
+		.column1{ height:100%;} 
+		.span1{line-height;}       
+   </style>
+   <script type="text/javascript">
+   		$(function(){
+   			getShips();
+   		});
+   		function getShips(){
+   			$.post('/shipSocket/getships.do',{},function(result){
+   				
+   			},'json');
+   		}
+   		function clearShips(){
+			$.post('/shipSocket/clearShips.do',{},function(result){
+   				
+   			},'json');
+   		}
+   		function shipServer(){
+   			var port = $("#port").val();
+   			var kind = $(this).attr("kind");
+   			$.post('/shipSocket/shipServer.do',{port:port,kind:kind},function(result){
+   				
+   			},'json');
+   		}
+   		function send(){
+   			var message = $("#message").html();
+   			var shipName = $("#shipName").html();
+		$.post('/shipSocket/send.do',{message:message,shipName:shipName},function(result){
+   				
+   			},'json');
+   		}
+   		
+   </script>
+</head>
+<body>
+	<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<div class="btn-group" onclick=shipServer(this);>
+				 <span>端口：</span><input id="port" type="text"/>
+				 <button class="btn btn-default" type="button" kind="1"> 开启服务</button> 
+				 <button class="btn btn-default" type="button" kind="2"> 关闭服务</button>
+				 <button class="btn btn-default" type="button" kind="3"> 暂停服务</button> 
+				 <button class="btn btn-default" type="button" kind="4"> 恢复服务</button>
+				 <span class="span1">服务状态:</span><span class="span1"></span>
+			</div>
+		</div>
+	</div>
+	<div class="row clearfix">
+		<div class="col-md-2 column column1">
+			<button type="button" class="btn btn-default" onclick="getShips()">刷新</button><button type="button" class="btn btn-default" onclick="clearShips()">清空</button>
+			<div id="ships" class="btn-group btn-group-vertical">
+				 <button class="btn btn-default" type="button">船A</button> 
+				 <button class="btn btn-default" type="button">船B</button>
+				 <button class="btn btn-default" type="button">船C</button>
+				 <button class="btn btn-default" type="button">船D</button>
+			</div>
+		</div>
+		<div class="col-md-4 column column1">
+			
+			<p><textarea id="message" rows="10" cols="30"></textarea></p>
+			<span>向</span><span id ="shipName">船A</span><button type="button" class="btn btn-default" onclick="send()">发送</button>
+		</div>
+		<div class="col-md-6 column column1">
+			 
+			 <h2>
+				收发信息
+			</h2>
+			<p>
+				12312313123123
+			</p>
+			<p>
+			</p>
+		</div>
+	</div>
+</div>
+</body>
+</html>
