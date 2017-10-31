@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8"> 
+   <title>shipsControl</title>
+   <link rel="stylesheet" href="../css/bootstrap.min.css">  
+   <script src="../js/jquery-1.7.2.min.js"></script>
+   <script src="../js/bootstrap.min.js"></script>
+   <style>
+		.column{ text-align:center;border:1px solid #09a800;}
+		html,body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+		body {
+            display: flex;
+            align-items: center; /*定义body的元素垂直居中*/
+            justify-content: center; /*定义body的里的元素水平居中*/
+        }
+		.column1{ height:100%;} 
+		.span1{line-height;}       
+   </style>
+   <script type="text/javascript">
+   		$(function(){
+   			getShips();//获取船
+   			getStatus();//获取服务状态
+   		});
+   		function getShips(){
+   			$.post('/AllStudy/shipSocket/getShips.do',{},function(result){
+   				$("#ships").empty();
+   				for(var i=0;i<result.length;i++){
+   					$("#ships").html($("#ships").html()+'<button class="btn btn-default" type="button" onclick="selectShip(this)">'+result[i]+'</button>');
+   				}
+   			},'json');
+   		}
+   		function selectShip(_this){
+   			$("#ships").children().removeClass("btn-success");
+   			var shipName = $(_this).text();
+   			$(_this).addClass("btn-success");
+   			$("#shipName").html(shipName);
+   		}
+   		function clearShips(){
+			$.post('/AllStudy/shipSocket/clearShips.do',{},function(result){
+				$("#ships").empty();
+   			},'text');
+   		}
+   		function shipServer(_this){
+   			var port = $("#port").val();
+   			var kind = $(_this).attr("kind");
+   			$.post('/AllStudy/shipSocket/shipServer.do',{port:port,kind:kind},function(result){
+   				if(!result=="success"){
+   					return;
+   				}
+   				if(kind==1){
+   					$("#startBtn").attr('disabled',true);
+   					$("#closeBtn").removeAttr('disabled');
+   					$("#stopBtn").removeAttr('disabled');
+   					$("#recoverBtn").attr('disabled',true);
+   					$("#port").attr('disabled',true);
+   					$("#span1").text('开启');
+   				}else if(kind==2){
+   					$("#startBtn").removeAttr('disabled');
+   					$("#closeBtn").attr('disabled',true);
+   					$("#stopBtn").attr('disabled',true);
+   					$("#recoverBtn").attr('disabled',true);
+   					$("#port").removeAttr('disabled');
+   					$("#span1").text('关闭');
+   				}else if(kind==3){
+   					$("#stopBtn").attr('disabled',true);
+   					$("#recoverBtn").removeAttr('disabled');
+   					$("#span1").text('暂停');
+   				}else if(kind==4){
+   					$("#stopBtn").removeAttr('disabled');
+   					$("#recoverBtn").attr('disabled',true);
+   					$("#span1").text('开启');
+   				}
+   			},'text');
+   		}
+   		function send(){
+   			var message = $("#message").val();
+   			var shipName = $("#shipName").html();
+		$.post('/AllStudy/shipSocket/send.do',{message:message,shipName:shipName},function(result){
+			$("#message").val("");
+   			},'text');
+   		}
+   		function getStatus(){
+			$.post('/AllStudy/shipSocket/getStatus.do',{},function(result){
+				var status = result[0];
+				var port = result[1];
+   				if(status==3){//开启
+   					$("#startBtn").attr('disabled',true);
+   					$("#closeBtn").removeAttr('disabled');
+   					$("#stopBtn").removeAttr('disabled');
+   					$("#recoverBtn").attr('disabled',true);
+   					$("#port").attr('disabled',true);
+   					$("#port").val(port);
+   					$("#span1").text('开启');
+   				}else if(status==1){//暂停
+   					$("#startBtn").attr('disabled',true);
+   					$("#closeBtn").removeAttr('disabled');
+   					$("#stopBtn").attr('disabled',true);
+   					$("#recoverBtn").removeAttr('disabled');;
+   					$("#port").attr('disabled',true);
+   					$("#port").val(port);
+   					$("#span1").text('暂停');
+   				}else if(status==0){//关闭
+   					$("#span1").text('关闭');
+   				}
+   			},'json');
+   		}
+   </script>
+</head>
+<body>
+	<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<div class="btn-group">
+				 <span>端口：</span><input id="port" type="text"/>
+				 <button class="btn btn-default" type="button" kind="1" id="startBtn" onclick="shipServer(this)"> 开启服务</button> 
+				 <button class="btn btn-default" type="button" kind="2" disabled="true" id="closeBtn" onclick="shipServer(this)"> 关闭服务</button>
+				 <button class="btn btn-default" type="button" kind="3" disabled="true" id="stopBtn" onclick="shipServer(this)"> 暂停服务</button> 
+				 <button class="btn btn-default" type="button" kind="4" disabled="true" id="recoverBtn" onclick="shipServer(this)"> 恢复服务</button>
+				 <span class="span1">服务状态:</span><span class="span1" id="span1"></span>
+			</div>
+		</div>
+	</div>
+	<div class="row clearfix">
+		<div class="col-md-2 column column1">
+			<button type="button" class="btn btn-default" onclick="getShips()">刷新</button><button type="button" class="btn btn-default" onclick="clearShips()">清空</button>
+			<div id="ships" class="btn-group btn-group-vertical">
+				 <button class="btn btn-default" type="button">船A</button> 
+				 <button class="btn btn-default" type="button">船B</button>
+				 <button class="btn btn-default" type="button">船C</button>
+				 <button class="btn btn-default" type="button">船D</button>
+			</div>
+		</div>
+		<div class="col-md-4 column column1">
+			
+			<p><textarea id="message" rows="10" cols="30"></textarea></p>
+			<span>向</span><span id ="shipName">船A</span><button type="button" class="btn btn-default" onclick="send()">发送</button>
+		</div>
+		<div class="col-md-6 column column1">
+			 
+			 <h2>
+				
+			</h2>
+			<p>
+				
+			</p>
+			<p>
+			</p>
+		</div>
+	</div>
+</div>
+</body>
+</html>

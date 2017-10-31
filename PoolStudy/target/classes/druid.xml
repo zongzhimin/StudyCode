@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- druid 数据库连接池注册数据源 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+		<property name="url" value="#{config.url}"></property>
+		<property name="driverClassName" value="#{config.driverClassName}"></property>
+		<property name="username" value="#{config.username}"></property>
+		<property name="password" value="#{config.password}"></property>
+
+		<property name="initialSize" value="3"></property>
+		<property name="minIdle" value="2"></property>
+		<property name="maxActive" value="5"></property>
+		<property name="maxWait" value="10000"></property>
+		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+		<property name="poolPreparedStatements" value="true"></property>
+		<property name="maxPoolPreparedStatementPerConnectionSize"
+			value="20"></property>
+ 
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000"></property>
+
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000"></property>
+
+		<!-- 建议配置为true，不影响性能，并且保证安全性。申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis， 
+			执行validationQuery检测连接是否有效。 -->
+		<property name="testWhileIdle" value="true"></property>
+
+		<!-- 这里建议配置为TRUE，防止取到的连接不可用 ,申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。 -->
+		<property name="testOnBorrow" value="true"></property>
+
+		<!-- 归还连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能 -->
+		<property name="testOnReturn" value="false"></property>
+
+	</bean>
+
+
+
+
+
+
+</beans>
